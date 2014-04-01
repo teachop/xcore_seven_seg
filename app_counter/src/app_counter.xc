@@ -24,7 +24,7 @@ void counter_task(in port buttons, interface seven_seg_if client display) {
     uint32_t counter = 0;
     const uint8_t places = 1;
     uint32_t pins = 0;
-    uint32_t re_enable_countdown = 0;
+    uint32_t hold_off = 0;
     const uint32_t tick_rate = 2*1000*100;
     timer tick;
     uint32_t next_tick;
@@ -40,11 +40,12 @@ void counter_task(in port buttons, interface seven_seg_if client display) {
         case tick when timerafter(next_tick) :> void:
             // 2 millisecond timer tick
             next_tick += tick_rate;
-            if ( re_enable_countdown ) {
-                re_enable_countdown--;
+            uint32_t new_pins;
+            buttons :> new_pins;
+            hold_off = (!new_pins && (40<hold_off))? 40 : hold_off;
+            if ( hold_off ) {
+                hold_off--;
             } else {
-                uint32_t new_pins;
-                buttons :> new_pins;
                 uint32_t counter_was = counter;
                 switch ( new_pins ) {
                 case BUTTON_UP:
@@ -62,10 +63,10 @@ void counter_task(in port buttons, interface seven_seg_if client display) {
                 }
                 if ( counter != counter_was ) {
                     display.setValue( counter, places, 0 );
-                    re_enable_countdown = 100;
+                    hold_off = pins? 75 : 350;
                 }
-                pins = new_pins;
             }
+            pins = new_pins;
             break;
         }
     }
