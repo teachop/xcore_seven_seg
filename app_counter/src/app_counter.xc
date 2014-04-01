@@ -11,8 +11,8 @@
 #include "seven_seg.h"
 
 // one at a time...
-#define BUTTON_UP       (0x02)
 #define BUTTON_DOWN     (0x01)
+#define BUTTON_UP       (0x02)
 #define BUTTON_BIG_UP   (0x04)
 #define BUTTON_BIG_DOWN (0x08)
 
@@ -22,8 +22,7 @@
 //
 void counter_task(in port buttons, interface seven_seg_if client display) {
     uint32_t counter = 0;
-    const uint8_t places = 1;
-    uint32_t pins = 0;
+    uint32_t none_on = 1;
     uint32_t hold_off = 0;
     const uint32_t tick_rate = 2*1000*100;
     timer tick;
@@ -40,14 +39,12 @@ void counter_task(in port buttons, interface seven_seg_if client display) {
         case tick when timerafter(next_tick) :> void:
             // 2 millisecond timer tick
             next_tick += tick_rate;
-            uint32_t new_pins;
-            buttons :> new_pins;
-            hold_off = (!new_pins && (40<hold_off))? 40 : hold_off;
-            if ( hold_off ) {
-                hold_off--;
-            } else {
+            uint32_t pressed;
+            buttons :> pressed;
+            hold_off = (!pressed && (30<hold_off))? 30 : (hold_off? hold_off-1 : 0);
+            if ( !hold_off ) {
                 uint32_t counter_was = counter;
-                switch ( new_pins ) {
+                switch ( pressed ) {
                 case BUTTON_UP:
                     counter = (9999>counter)? counter+1 : 9999;
                     break;
@@ -62,11 +59,12 @@ void counter_task(in port buttons, interface seven_seg_if client display) {
                     break;
                 }
                 if ( counter != counter_was ) {
-                    display.setValue( counter, places, 0 );
-                    hold_off = pins? 75 : 350;
+                    display.setValue( counter, 1, 0 );
+                    hold_off = none_on? 300 : 75;
+                    none_on = 0;
                 }
             }
-            pins = new_pins;
+            none_on = none_on || !pressed;
             break;
         }
     }
