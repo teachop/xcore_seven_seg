@@ -13,3 +13,4 @@ The SparkFun display unit offers several serial interface choices includng I2C, 
 - **J7.16** UP-by-100 button.
 - **J7.18** DOWN-by-100 button.
 
+Note that using a wide port for the transmit data means the capability of shifting in the port output statement could not be used in the driver.

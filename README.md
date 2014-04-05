@@ -11,4 +11,4 @@ The driver is formatted as an XMOS XCore module, and written as a task function.
 - **setText(text)**  Display four characters as ASCII which is rather limited on seven segments.
 - **setClock(hours, minutes, am_pm)**  Display a digital clock face.  If **am_pm** is false, a 24 hour format will be used.  When in 12 hour mode, the right-most decimal point is used as the PM indicator.  For example, if **hours**=13, **minutes**=45, in 12 hour mode " 1:45." will display.
 - **blank()**  Display all segments off.
-
+- **written()**  Provides support for [notification](https://www.xmos.com/published/how-use-notifications-over-interfaces?secure=1).  Notification will be sent from the driver whenever a **setValue/setText/setClock/blank** display update completes.  The notification is cleared whenever any of the same interface functions are called.  Use of the notification feature is completely optional.
