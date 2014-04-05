@@ -11,7 +11,7 @@
 // ---------------------------------------------------------
 // seven_seg_task - Serial 7 segment display driver
 //
-void seven_seg_task(port txd, interface seven_seg_if server dvr) {
+void seven_seg_task(port txd, interface seven_seg_if server display) {
     const uint32_t bit_rate = (100*1000*1000)/9600;
     uint8_t latest_ascii[4] = {0,0,0,0};
     uint8_t latest_dp = 0;
@@ -32,7 +32,7 @@ void seven_seg_task(port txd, interface seven_seg_if server dvr) {
 
     while( 1 ) {
         select {
-        case dvr.setValue(uint32_t value, uint8_t dplaces, uint8_t lead_0s):
+        case display.setValue(uint32_t value, uint8_t dplaces, uint8_t lead_0s):
             value = (9999<value)? 9999 : value;
             dplaces = (3<dplaces)? 3 : dplaces;
             latest_dp = dplaces? 1<<(3-dplaces) : 0;
@@ -43,7 +43,7 @@ void seven_seg_task(port txd, interface seven_seg_if server dvr) {
             }
             display_updated = 1;
             break;
-        case dvr.setClock(uint8_t hours, uint8_t minutes, uint8_t am_pm):
+        case display.setClock(uint8_t hours, uint8_t minutes, uint8_t am_pm):
             hours = (23<hours)? 23 : hours;
             minutes = (59<minutes)? 59 : minutes;
             latest_dp = 0x10;
@@ -64,14 +64,14 @@ void seven_seg_task(port txd, interface seven_seg_if server dvr) {
             latest_ascii[3] = '0' + minutes%10;
             display_updated = 1;
             break;
-        case dvr.setText(uint8_t (&text)[4]):
+        case display.setText(uint8_t (&text)[4]):
             latest_dp = 0;
             for ( uint32_t loop=0; loop<4; ++loop ) {
                 latest_ascii[loop] = text[loop];
             }
             display_updated = 1;
             break;
-        case dvr.blank(void):
+        case display.blank(void):
             latest_dp = 0;
             for ( uint32_t loop=0; loop<4; ++loop ) {
                 latest_ascii[loop] = ' ';
@@ -107,6 +107,7 @@ void seven_seg_task(port txd, interface seven_seg_if server dvr) {
                 tx_count--;
             } else {
                 // pause
+                display.written();
                 next_tick += display_rate;
             }
             break;

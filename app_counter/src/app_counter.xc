@@ -22,6 +22,7 @@
 //
 void counter_task(in port buttons, interface seven_seg_if client display) {
     uint32_t counter = 0;
+    uint32_t counter_update = 0;
     uint32_t none_on = 1;
     uint32_t hold_off = 0;
     const uint32_t tick_rate = 2*1000*100;
@@ -29,21 +30,22 @@ void counter_task(in port buttons, interface seven_seg_if client display) {
     uint32_t next_tick;
     tick :> next_tick;
     
-    //display.setValue(counter,places,0);
-    //display.setClock(12,59,1);
     uint8_t message[4] = {'p','U','S','H'};
     display.setText(message);
 
     while (1) {
         select {
+        case display.written():
+            counter_update = 0;
+            break;
         case tick when timerafter(next_tick) :> void:
             // 2 millisecond timer tick
             next_tick += tick_rate;
             uint32_t pressed;
             buttons :> pressed;
             hold_off = (!pressed && (30<hold_off))? 30 : (hold_off? hold_off-1 : 0);
-            if ( !hold_off ) {
-                uint32_t counter_was = counter;
+            if ( !hold_off && !counter_update) {
+                counter_update = 1;
                 switch ( pressed ) {
                 case BUTTON_UP:
                     counter = (9999>counter)? counter+1 : 9999;
@@ -57,8 +59,12 @@ void counter_task(in port buttons, interface seven_seg_if client display) {
                 case BUTTON_BIG_DOWN:
                     counter = (99<counter)? counter-100 : 0;
                     break;
+                default:
+                    counter_update = 0;
+                    pressed = 0;
+                    break;
                 }
-                if ( counter != counter_was ) {
+                if ( counter_update ) {
                     display.setValue( counter, 1, 0 );
                     hold_off = none_on? 300 : 75;
                     none_on = 0;
@@ -76,11 +82,13 @@ void counter_task(in port buttons, interface seven_seg_if client display) {
 //
 in port button_pins = XS1_PORT_4E; // j7.22, 24, 16, 18
 port txd_pin = XS1_PORT_4C; // j7.5 [6, 7, 8]
+out port drive_pins = XS1_PORT_4D; // j7.9, 13, 12, 14
 
 int main() {
     interface seven_seg_if display;
 
     set_port_pull_down(button_pins);
+    drive_pins <: 0x0f; // light up the keypad for button inputs
 
     par {
         counter_task(button_pins, display);

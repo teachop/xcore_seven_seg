@@ -9,17 +9,20 @@
 // driver interface
 interface seven_seg_if {
 
+    // the display was written
+    [[notification]] slave void written(void);
+
     // text to display (limited function on 7 segment)
-    void setText(uint8_t (&text)[4]);
+    [[clears_notification]] void setText(uint8_t (&text)[4]);
 
     // blank the display
-    void blank(void);
+    [[clears_notification]] void blank(void);
 
     // show value with optional decimal places, optional leading zeros
-    void setValue(uint32_t value, uint8_t dplaces, uint8_t lead_0s);
+    [[clears_notification]] void setValue(uint32_t value, uint8_t dplaces, uint8_t lead_0s);
 
     // show clock display with optional am-pm format
-    void setClock(uint8_t hours, uint8_t minutes, uint8_t am_pm);
+    [[clears_notification]] void setClock(uint8_t hours, uint8_t minutes, uint8_t am_pm);
 };
 
 void seven_seg_task(port txd, interface seven_seg_if server dvr);
