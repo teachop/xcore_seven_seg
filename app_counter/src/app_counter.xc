@@ -30,8 +30,7 @@ void counter_task(in port buttons, interface seven_seg_if client display) {
     uint32_t next_tick;
     tick :> next_tick;
     
-    uint8_t message[4] = {'p','U','S','H'};
-    display.setText(message);
+    display.setText("pUSH");
 
     while (1) {
         select {
