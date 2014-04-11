@@ -6,6 +6,10 @@
 #ifndef __SEVEN_SEG_H__
 #define __SEVEN_SEG_H__
 
+// setClock flags
+#define SSEG_AM_PM 0x01 // enable 12 hour clock mode
+#define SSEG_COLON 0x02 // enable colon in clock display
+
 // driver interface
 interface seven_seg_if {
 
@@ -21,10 +25,11 @@ interface seven_seg_if {
     // show value with optional decimal places, optional leading zeros
     [[clears_notification]] void setValue(uint32_t value, uint8_t dplaces, uint8_t lead_0s);
 
-    // show clock display with optional am-pm format
-    [[clears_notification]] void setClock(uint8_t hours, uint8_t minutes, uint8_t am_pm);
+    // show clock display with optional format flags: bit0=am_pm, bit1=colon
+    [[clears_notification]] void setClock(uint8_t hours, uint8_t minutes, uint8_t flags);
 };
 
+[[combinable]]
 void seven_seg_task(port txd, interface seven_seg_if server dvr);
 
 

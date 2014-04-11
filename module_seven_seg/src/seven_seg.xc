@@ -11,6 +11,7 @@
 // ---------------------------------------------------------
 // seven_seg_task - Serial 7 segment display driver
 //
+[[combinable]]
 void seven_seg_task(port txd, interface seven_seg_if server display) {
     const uint32_t bit_rate = (100*1000*1000)/9600;
     uint8_t latest_ascii[4] = {0,0,0,0};
@@ -43,10 +44,11 @@ void seven_seg_task(port txd, interface seven_seg_if server display) {
             }
             display_updated = 1;
             break;
-        case display.setClock(uint8_t hours, uint8_t minutes, uint8_t am_pm):
+        case display.setClock(uint8_t hours, uint8_t minutes, uint8_t flags):
             hours = (23<hours)? 23 : hours;
             minutes = (59<minutes)? 59 : minutes;
-            latest_dp = 0x10;
+            latest_dp = (SSEG_COLON&flags)? 0x10 : 0;
+            uint8_t am_pm = SSEG_AM_PM & flags;
             if ( am_pm ) {
                 if ( 12 <= hours ) {
                     latest_dp |= 0x08;
