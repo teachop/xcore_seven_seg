@@ -26,7 +26,7 @@ void seven_seg_task(port txd, interface seven_seg_if server display) {
         buffer[loop] = 0;
     }
 
-    uint32_t display_rate = 50*1000*100;
+    uint32_t display_rate = 25*1000*100;
     timer tick;
     uint32_t next_tick;
     tick :> next_tick;
