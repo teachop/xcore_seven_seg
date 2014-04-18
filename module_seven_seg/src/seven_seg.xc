@@ -12,8 +12,8 @@
 // seven_seg_task - Serial 7 segment display driver
 //
 [[combinable]]
-void seven_seg_task(port txd, interface seven_seg_if server display) {
-    const uint32_t bit_rate = (100*1000*1000)/9600;
+void seven_seg_task(port txd, uint32_t baud, interface seven_seg_if server display) {
+    const uint32_t bit_rate = (100*1000*1000)/baud;
     uint8_t latest_ascii[4] = {0,0,0,0};
     uint8_t latest_dp = 0;
     uint32_t display_updated = 0;

@@ -91,7 +91,7 @@ int main() {
 
     par {
         counter_task(button_pins, display);
-        seven_seg_task(txd_pin, display);
+        seven_seg_task(txd_pin, 9600, display);
     }
 
     return 0;

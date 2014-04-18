@@ -30,7 +30,7 @@ interface seven_seg_if {
 };
 
 [[combinable]]
-void seven_seg_task(port txd, interface seven_seg_if server dvr);
+void seven_seg_task(port txd, uint32_t baud, interface seven_seg_if server dvr);
 
 
 #endif //__SEVEN_SEG_H__
