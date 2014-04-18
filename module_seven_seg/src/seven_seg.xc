@@ -13,7 +13,7 @@
 //
 [[combinable]]
 void seven_seg_task(port txd, uint32_t baud, interface seven_seg_if server display) {
-    const uint32_t bit_rate = (100*1000*1000)/baud;
+    const uint32_t bit_rate = (100*1000*1000)/(baud?baud:9600);
     uint8_t latest_ascii[4] = {0,0,0,0};
     uint8_t latest_dp = 0;
     uint32_t display_updated = 0;
