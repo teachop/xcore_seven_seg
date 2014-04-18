@@ -4,7 +4,7 @@ This repository provides an xCore driver module for a SparkFun [Serial 7 Segment
 ###Introduction
 The SparkFun display unit offers several serial interface choices includng I2C, SPI and UART. For this driver UART was selected.
 
-**Note and TODO** This serial display uses the internal oscillator of the ATmega328P for timing.  From Atmel this is not calibrated well enough to guarantee UART communication.  SparkFun does not calibrate it as part of their process.  Based on my experiences this can cause problems, so it may be best to change this driver to I2C and avoid the issue.
+**Caution** This particular serial display uses the internal oscillator of the ATmega328P for timing.  By default this is not calibrated well enough to guarantee UART communication.  Based on actual experience this does cause problems on some units, requiring the xCORE baud rate to be adjusted as compensation (or user calibration of the display).
 
 The driver is formatted as an XMOS XCore module, and written as a task function.  Control of the driver is via inter-task communication using interfaces, which is a feature of the XC language.  This technique implements a message passing API between tasks.
 
