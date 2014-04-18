@@ -97,6 +97,13 @@ void seven_seg_task(port txd, uint32_t baud, interface seven_seg_if server displ
                 delay_count += bit_rate;
                 txd @ delay_count <: 0;
                 uint8_t shifter = buffer[sizeof(buffer)-tx_count];
+                // initial support for direct segment mapping by msb
+                if ( (0x80&shifter) && (4>=tx_count) ) {
+                    buffer[sizeof(buffer)-tx_count] &= 0x7f;
+                    // insert the correct command byte
+                    shifter = 0x7b + (4-tx_count);
+                    tx_count++;
+                }
                 for ( uint32_t bit=0; bit<8; ++bit ) {
                     // data bits
                     delay_count += bit_rate;
