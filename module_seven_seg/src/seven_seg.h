@@ -30,7 +30,13 @@ interface seven_seg_if {
 };
 
 [[combinable]]
-void seven_seg_task(port txd, uint32_t baud, interface seven_seg_if server dvr);
+void seven_seg_task(port txd,
+        // note: baud parameter does not reconfigure the display
+        // normally set it to 9600, but change to match display if it:
+        // 1) has been reconfigured to an alternate rate, or
+        // 2) suffers from innacurate internal AVR RC clock :(
+        uint32_t baud,
+        interface seven_seg_if server dvr);
 
 
 #endif //__SEVEN_SEG_H__
